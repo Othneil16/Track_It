@@ -8,10 +8,6 @@ const userSchema = new mongoose.Schema({
         type: String,
         require:true
     }, 
-    profileImage:{
-         type: String,
-         require:true
-     }, 
     phoneNumber:{
         type: String,
         require:true,
@@ -26,14 +22,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         require:true
     },
-    userId:{
-        type: String,
-        required:true
-    },
     packages:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref:"packages",
     }],
+    isVerified:{
+        type:Boolean,
+        default:false
+    }
     
 },{timestamp:true})
 

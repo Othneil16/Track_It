@@ -20,5 +20,5 @@ const packageSchema= new mongoose.Schema({
     
 },{timestamp:true})
 
-const companyModel = mongoose.model("packages", packageSchema)
-module.exports = companyModel
+const packageModel = mongoose.model("packages", packageSchema)
+module.exports = packageModel

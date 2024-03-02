@@ -4,7 +4,7 @@ const riderSchema = new mongoose.Schema({
         type: String,
         require:true
     },
-    riderlastName:{
+    riderLastName:{
         type: String,
         require:true
     }, 
@@ -31,8 +31,9 @@ const riderSchema = new mongoose.Schema({
         require:true
     },
     riderId:{
-        type: Default,
-        require:true
+        type: String,
+        require:true,
+        unique:true
     },
     riderpackages:[{
         type: mongoose.SchemaTypes.ObjectId,
@@ -41,6 +42,10 @@ const riderSchema = new mongoose.Schema({
     riderLocation:{
         type: String,
         require:true
+    },
+    isVerified:{
+        type:Boolean,
+        default:false
     }
     
 },{timestamp:true})

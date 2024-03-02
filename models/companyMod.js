@@ -21,6 +21,10 @@ const companySchema = new mongoose.Schema({
         type: String,
         require:true
     }, 
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
     companyRiders:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref:"riders",
@@ -29,7 +33,10 @@ const companySchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref:"packages",
     }],
-   
+    companyUsers:[{
+        type: mongoose.SchemaTypes.ObjectId,
+        ref:"User",
+    }],
     
 },{timestamp:true})
 
