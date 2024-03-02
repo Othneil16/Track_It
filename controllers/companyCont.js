@@ -60,7 +60,7 @@ try {
     // Sending a verification email to the user
     const subject = 'Kindly verify your company account';
 
-    const link = `${req.protocol}://${req.get('host')}/company/verify-email/${companyToken}`;
+    const link = `${req.protocol}://${req.get('host')}/api/v1/company/verify-email/${companyToken}`;
 
     const html = companydynamicMail(companyName.toUpperCase(), link);
 
@@ -173,11 +173,8 @@ exports.companyVerifyEmail = async (req, res) => {
       // update the user's verification status
       const updatedCompany = await companyModel.findOneAndUpdate({ companyEmail }, company);
   
-      res.status(200).json({
-        message: "company verified successfully",
-        data: updatedCompany,
-      })
-      // res.status( 200 ).redirect( `${ process.env.BASE_URL }/login` );
+      return res.redirect( `${ process.env.BASE_URL }/login` );
+  
   
     } catch (error) {
       res.status(500).json({
