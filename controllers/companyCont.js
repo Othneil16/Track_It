@@ -185,3 +185,20 @@ exports.companyVerifyEmail = async (req, res) => {
     }
   }
   
+
+  exports.assignPackageToRider = async(req, res)=>{
+    try {
+        const {companyId} = req.company
+        const {packageId, riderId} = req.params
+        const company = await companyModel.findById(companyId)
+
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' })
+        }
+
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
+          }) 
+    }
+  }

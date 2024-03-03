@@ -158,12 +158,12 @@ exports.riderSignIn = async (req, res) => {
 
         // Find rider by email, phone number, or rider ID
         if (isEmail) {
-            rider = await riderModel.findOne({ riderEmail: identifier.toLowerCase() });
+            rider = await riderModel.findOne({ riderEmail: isEmail.toLowerCase() });
         } else if (isRiderId) {
-            rider = await riderModel.findOne({ riderId: identifier });
+            rider = await riderModel.findOne({ riderId: isRiderId });
         }
 
-        // Check if rider exists
+        
         if (!rider) {
             return res.status(404).json({
                 message: 'Rider not found'
@@ -179,13 +179,12 @@ exports.riderSignIn = async (req, res) => {
             });
         }
 
-        // Generate rider token
+        
         const riderToken = jwt.sign({
-            riderId: rider._id,
+            riderId: riderId,
             riderEmail: rider.riderEmail,
             riderPhoneNumber: rider.riderPhoneNumber,
-            riderFirstName: rider.riderFirstName,
-            riderLastName: rider.riderLastName
+            riderAssignedPackaged:rider.riderAssignedpackages
         }, process.env.jsonSecret, { expiresIn: '1d' });
 
         // Return success message and rider data

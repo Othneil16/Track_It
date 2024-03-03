@@ -38,7 +38,8 @@ const companySchema = new mongoose.Schema({
         ref:"User",
     }],
     pendingPackages:[{
-        
+        type: mongoose.SchemaTypes.ObjectId,
+        ref:"packages",
     }]
 },{timestamp:true})
 

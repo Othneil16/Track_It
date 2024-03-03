@@ -1,5 +1,10 @@
 const mongoose = require('mongoose')
 const packageSchema= new mongoose.Schema({
+    status: {
+        type: String,
+        enum: ['pending', 'assigned', 'in transit', 'delivered'],
+        default: 'pending'
+    },
     packageName:{
         type:String,
         require:true,
@@ -30,11 +35,7 @@ const packageSchema= new mongoose.Schema({
     delivered:{
         type:Boolean,
         default:false
-    },
-    status:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "packageStatus", 
-    },
+    }
     
 },{timestamp:true})
 

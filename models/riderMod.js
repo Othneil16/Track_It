@@ -35,7 +35,7 @@ const riderSchema = new mongoose.Schema({
         require:true,
         unique:true
     },
-    riderpackages:[{
+    riderAssignedpackages:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref:"packages",
     }],
