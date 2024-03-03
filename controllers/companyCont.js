@@ -173,9 +173,10 @@ exports.companyVerifyEmail = async (req, res) => {
       // update the user's verification status
       const updatedCompany = await companyModel.findOneAndUpdate({ companyEmail }, company);
      
-    if(company.isVerified === true){
-     return res.status(200).send(generateLoginCss, "<script>setTimeout(()={window.location.href = 'https://the-track.it.vercel.app/login' ;}, 2000); </script>");
-    }
+    // if(company.isVerified === true){
+    //  return res.status(200).send(generateLoginCss, `<script>setTimeout(()=>{window.location.href = 'https://the-track.it.vercel.app/login' ;}, 2000); </script>`);
+    // }
+        res.status( 200 ).redirect( `${ process.env.BASE_URL }/login` );
      
     } catch (error) {
       res.status(500).json({
