@@ -1,6 +1,9 @@
 const joi = require("joi")
 
 const userValidate = joi.object({
+    packageName:joi.string()
+    .min(3)
+    .max(20),
     packageWeight:joi.string()
     .min(3)
     .max(15),

@@ -53,7 +53,7 @@ const generateUniqueId = (length)=> {
         const { riderFirstName, riderLastName, riderEmail, riderPhoneNumber, riderPassword, riderAddress, confirmRiderPassword} = req.body;
         
         
-        const file = req.file.path
+        const file = req.files.riderprofileImage.tempFilePath
         const result = await cloudinary.uploader.upload(file)
 
         // Validate rider data
@@ -243,3 +243,50 @@ exports.verifyRiderEmail = async (req, res) => {
     }
   }
   
+
+exports.getAllRiders = async (req, res) => {
+    try {
+        const riders = await riderModel.find();
+
+      
+        if (!riders || riders.length === 0) {
+            return res.status(404).json({
+                 message: 'No riders found' 
+         });
+        }
+
+        return res.status(200).json({ riders });
+    } catch (error) {
+        console.error('Error fetching riders:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+exports.getACompanyRiders = async (req, res) => {
+    try {
+        const { companyId } = req.company;
+
+        // Fetch the company from the database
+        const company = await companyModel.findById(companyId);
+
+        // Check if the company exists
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+
+        // Fetch the riders associated with the company
+        const riders = await riderModel.find({ _id: { $in: company.companyRiders } });
+
+        // Check if any riders are found
+        if (!riders || riders.length === 0) {
+            return res.status(404).json({ message: 'No riders found or created for this company' });
+        }
+        return res.status(200).json({ riders });
+    } catch (error) {
+        console.error('Error fetching company riders:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+

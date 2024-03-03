@@ -2,7 +2,7 @@ const userModel = require("../models/userModel")
 const companyModel = require("../models/companyMod")
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
-const revokedToken = require('../models/revokedTokenMod')
+const revokedCompanyTokenModel = require('../models/revokedComTokenMod')
 
 // const revokedToken = require('../models/revokedTokenModel')
 
@@ -81,7 +81,7 @@ exports.companyauthenticate = async (req, res, next) => {
             });
         }
 
-        const isTokenRevoked = await revokedToken.exists({ companyToken });
+        const isTokenRevoked = await revokedCompanyTokenModel.exists({ companyToken });
 
         if (isTokenRevoked) {
             return res.status(401).json({

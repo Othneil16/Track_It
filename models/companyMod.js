@@ -37,7 +37,9 @@ const companySchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref:"User",
     }],
-    
+    pendingPackages:[{
+        
+    }]
 },{timestamp:true})
 
 const companyModel = mongoose.model("Company", companySchema)

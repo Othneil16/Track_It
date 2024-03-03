@@ -1,7 +1,8 @@
 const userModel = require("../models/userModel")
+const riderModel = require("../models/riderMod")
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv').config()
-const revokedUserToken = require('../models/revokedUserTokenMod')
+const revokedRiderTokenModel = require('../models/revokedRiderTokenMod')
 
 // const revokedToken = require('../models/revokedTokenModel')
 
@@ -62,7 +63,7 @@ const revokedUserToken = require('../models/revokedUserTokenMod')
 // }
 
 
-exports.userAuthenticate = async (req, res, next) => {
+exports.companyauthenticate = async (req, res, next) => {
     try {
         const hasAuthorization = req.headers.authorization;
 
@@ -72,15 +73,15 @@ exports.userAuthenticate = async (req, res, next) => {
             });
         }
 
-        const userToken = hasAuthorization.split(' ')[1];
+        const riderToken = hasAuthorization.split(' ')[1];
 
-        if (!userToken) {
+        if (!riderToken) {
             return res.status(401).json({
                 message: 'Action requires sign-in. Please log in to continue.'
             });
         }
 
-        const isTokenRevoked = await revokedUserToken.exists({ userToken });
+        const isTokenRevoked = await revokedRiderTokenModel.exists({ riderToken });
 
         if (isTokenRevoked) {
             return res.status(401).json({
@@ -88,17 +89,17 @@ exports.userAuthenticate = async (req, res, next) => {
             });
         }
 
-        const decodedUserToken = jwt.verify(userToken, process.env.jsonSecret);
+        const decodedRiderToken = jwt.verify(riderToken, process.env.jsonSecret);
 
-        const user = await userModel.findById(decodedUserToken.userId);
+        const rider = await riderModel.findById(decodedRiderToken.riderId);
 
-        if (!user) {
+        if (!rider) {
             return res.status(404).json({
-                message: 'Authentication Failed: user not found'
+                message: 'Authentication Failed: rider not found'
             });
         }
 
-        req.user = decodedUserToken;
+        req.rider = decodedRiderToken;
 
         next();
 

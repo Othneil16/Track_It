@@ -1,5 +1,10 @@
 const mongoose = require('mongoose')
 const packageSchema= new mongoose.Schema({
+    packageName:{
+        type:String,
+        require:true,
+        unique:true
+    },
     packageWeight:{
         type: String,
         require:true
@@ -16,6 +21,19 @@ const packageSchema= new mongoose.Schema({
     user:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User", 
+    },
+    packageId:{
+        type: String,
+        require:true,
+        unique:true
+    },
+    delivered:{
+        type:Boolean,
+        default:false
+    },
+    status:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "packageStatus", 
     },
     
 },{timestamp:true})
