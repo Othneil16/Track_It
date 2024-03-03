@@ -1,5 +1,4 @@
 const companyModel = require('../models/companyMod');
-const packageStatusModel = require('../models/packageStatusMod');
 const userModel = require('../models/userModel');
 const packageModel = require('./models/packageMod'); 
  
@@ -52,14 +51,12 @@ exports.createPackage = async (req, res) => {
     try {
 
         const { userId } = req.user;
-        const {companyId, statusId} = req.params
+        const {companyId} = req.params
 
         // Retrieve company from the database
         const user = await userModel.findById(userId);
 
         const company = await companyModel.findById(companyId)
-
-        const status = await packageStatusModel.findById(statusId)
         if (!user) {
             return res.status(404).json({
                 message: 'user not found'
@@ -70,11 +67,7 @@ exports.createPackage = async (req, res) => {
                 message: 'company not found'
             });
         }
-        if (!status) {
-            return res.status(404).json({
-                message: 'status not found'
-            });
-        }
+    
 
         // Check if company is verified
 
@@ -112,12 +105,15 @@ exports.createPackage = async (req, res) => {
             destination,
             user: req.user._id,
             packageId: uniqueId,
-            packageName,
-            status: statusId
+            packageName
         });
 
-        // Save the package to the database
         const savedPackage = await package.save();
+        
+        company.pendingPackages.push(package._id)
+        company.companyPackages.push(package._id)
+
+        await company.save()
 
         return res.status(201).json({
             message: "Package created successfully",
