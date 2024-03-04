@@ -174,3 +174,81 @@ exports.createPackage = async (req, res) => {
 
 
 // Example usage
+
+exports.createNewPackage = async (req, res) => {
+    try {
+
+        const { userId } = req.user;
+        const {companyId} = req.params
+
+        // Retrieve company from the database
+        const user = await userModel.findById(userId);
+
+        const company = await companyModel.findById(companyId)
+        if (!user) {
+            return res.status(404).json({
+                message: 'user not found'
+            });
+        }
+        if (!company) {
+            return res.status(404).json({
+                message: 'company not found'
+            });
+        }
+    
+
+        // Check if company is verified
+
+        const { packageWeight, departure, destination, packageName} = req.body;
+
+        
+    //     const address = destination
+    //     isValidAddress(address)
+    // .then(valid => {
+    //     if (valid) {
+    //         console.log('Address is valid');
+    //     } else {
+    //         console.log('Address is invalid');
+    //     }
+    // })
+    // .catch(error => {
+    //     console.error('Error:', error);
+    // });
+        
+    let uniqueId;
+    let isUniqueId = false;
+    while (!isUniqueId) {
+        uniqueId = generateUniqueId(5);
+
+        const existingPackage = await packageModel.findOne({ packageId: uniqueId });
+        if (!existingPackage) {
+            isUniqueId = true;
+        }
+    }
+       
+        // Create the package
+        const package = new packageModel({
+            packageWeight,
+            departure,
+            destination,
+            user: req.user._id,
+            packageId: uniqueId,
+            packageName
+        });
+
+        const savedPackage = await package.save();
+        
+        company.pendingPackages.push(package._id)
+       
+        await company.save()
+
+        return res.status(201).json({
+            message: "Package created successfully",
+            package: savedPackage
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};
