@@ -296,11 +296,19 @@ exports.getCompanySingleRider = async (req, res) => {
 exports.assignPackageToRider = async (req, res) => {
     try {
         const { riderId, packageId } = req.params
+        const {companyId} = req.company
 
-        const rider = await riderModel.findById(riderId);
+        const rider = await riderModel.findById(riderId)
         if (!rider) {
             return res.status(404).json({
                 message: 'Rider not found'
+            })
+        }
+
+        const company = await companyModel.findById(companyId)
+        if (!company) {
+            return res.status(404).json({
+                message: 'Company not found'
             })
         }
 
@@ -312,32 +320,40 @@ exports.assignPackageToRider = async (req, res) => {
         }
 
         // Check if the package belongs to the company's pending packages
-        const company = await companyModel.findOne({ pendingPackages: packageId })
-        if (!company) {
+        const checkCompanyPackage = await companyModel.findOne({ pendingPackages: packageId })
+
+        if (!checkCompanyPackage) {
             return res.status(400).json({
                 message: `This package does not belong to this company's pending or unassigned packages`
             })
         }
 
-        const totalWeight = rider.riderAssignedpackages.reduce((acc, pkg) => acc + pkg.packageWeight, 0);
+        const totalWeight = rider.riderAssignedpackages.reduce((acc, pkg) => acc + pkg.packageWeight, 0)
 
         // Checking if assigning the new package exceeds the maximum weight limit (450 kg)
-        const newTotalWeight = totalWeight + package.packageWeight;
+        const newTotalWeight = totalWeight + package.packageWeight
         if (newTotalWeight > 450) {
             return res.status(400).json({
                 message: 'Assigning this package would exceed the maximum weight limit for the rider'
-            });
+            })
         }
 
-        rider.riderAssignedpackages.push(package._id);
-        await rider.save();
+        // Update rider's assigned packages
+        rider.riderAssignedpackages.push(package._id)
+        await rider.save()
+
+        // Update company's companyPackages and remove from unassignedPackages
+        company.companyPackages.push(package._id)
+        company.pendingPackages.pull(package._id)
+        await company.save()
 
         return res.status(200).json({
             message: `Package assigned to rider ${rider.riderId} successfully`
-        });
+        })
     } catch (error) {
         return res.status(500).json({
             error: error.message
-        });
+        })
     }
-};
+}
+
