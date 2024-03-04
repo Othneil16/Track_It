@@ -150,9 +150,8 @@ const generateUniqueId = (length)=> {
 exports.riderSignIn = async (req, res) => {
     const { identifier, riderPassword } = req.body;
     try {
-        // Check if the identifier is an email, phone number, or rider ID
+        // Check if the identifier is an email or rider ID
         const isEmail = /\S+@\S+\.\S+/.test(identifier);
-        // const isPhoneNumber = /^\d{11}$/.test(identifier);
         const isRiderId = /^[a-zA-Z0-9]{6}$/.test(identifier);
 
         if (!isEmail && !isRiderId) {
@@ -163,14 +162,13 @@ exports.riderSignIn = async (req, res) => {
 
         let rider;
 
-        // Find rider by email, phone number, or rider ID
+        // Find rider by email or rider ID
         if (isEmail) {
-            rider = await riderModel.findOne({ riderEmail: isEmail.toLowerCase() });
+            rider = await riderModel.findOne({ riderEmail: identifier.toLowerCase() });
         } else if (isRiderId) {
-            rider = await riderModel.findOne({ riderId: isRiderId });
+            rider = await riderModel.findOne({ riderId: identifier });
         }
 
-        
         if (!rider) {
             return res.status(404).json({
                 message: 'Rider not found'
@@ -182,21 +180,21 @@ exports.riderSignIn = async (req, res) => {
 
         if (!comparePassword) {
             return res.status(400).json({
-                message: 'Invalid password. Please type-in a correct password.'
+                message: 'Invalid password. Please enter the correct password.'
             });
         }
 
-        
+        // Sign JWT token
         const riderToken = jwt.sign({
-            riderId: riderId,
+            riderId: rider._id,
             riderEmail: rider.riderEmail,
             riderPhoneNumber: rider.riderPhoneNumber,
-            riderAssignedPackaged:rider.riderAssignedpackages
+            riderAssignedPackages: rider.riderAssignedpackages // Assuming you have this field defined
         }, process.env.jsonSecret, { expiresIn: '1d' });
 
         // Return success message and rider data
         return res.status(200).json({
-            message: `Welcome ${rider.riderFirstName}, Feel free to carry out fast and reliable operations with our application`,
+            message: `Welcome ${rider.riderFirstName}, feel free to carry out fast and reliable operations with our application`,
             riderToken,
             rider
         });
@@ -207,6 +205,7 @@ exports.riderSignIn = async (req, res) => {
         });
     }
 }
+
 
 
 
