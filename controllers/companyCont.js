@@ -251,7 +251,7 @@ exports.getACompanyRiders = async (req, res) => {
 
         if (!riders || riders.length === 0) {
             return res.status(404).json({
-                 message: 'No riders found or created for this company. Kidnly register a rider' 
+                 message: 'No riders found or created for this company. Kindly register a rider' 
             })
         }
         return res.status(200).json({

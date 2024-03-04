@@ -47,16 +47,23 @@ const generateUniqueId = (length)=> {
             return res.status(400).json({
                 error: "Company not verified"
             });
-        }
+        }   
        
-
+    
         const { riderFirstName, riderLastName, riderEmail, riderPhoneNumber, riderPassword, riderAddress, confirmRiderPassword} = req.body;
         
-        
-        const file = req.files.riderprofileImage.tempFilePath
-        const result = await cloudinary.uploader.upload(file)
 
-        // Validate rider data
+      
+        // if (!req.file || !req.file.profileImage) {
+        //     return res.status(400).json({ error: 'No file uploaded' });
+        // }
+
+        // const file = req.file;
+        // const result = await cloudinary.uploader.upload(file.tempFilePath, {
+        //     folder: 'rider-profiles',
+        //     resource_type: 'auto'
+        // });
+        
         await riderValidate.validateAsync(req.body);
 
         // Check if passwords match
@@ -91,7 +98,7 @@ const generateUniqueId = (length)=> {
             riderAddress,
             riderEmail: riderEmail.toLowerCase(),
             riderPassword: hashedRiderPassword,
-            profileImage:result.secure_url,
+            // profileImage:result.secure_url,
             riderId: uniqueId
         });
 

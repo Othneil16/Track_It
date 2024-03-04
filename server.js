@@ -1,19 +1,24 @@
 const express = require('express')
+const fileUpload = require('express-fileupload');
+
 const config =  require('./config/config')
 const cors = require('cors')
 const companyRouter = require('./routers/companyRout')
 const riderRouter = require('./routers/riderRout')
-const userRouter = require('./routers/userRout')
+// const userRouter = require('./routers/userRout')
 const packageRouter = require('./routers/packageRout')
+
 
 const port = process.env.port || 2035
 const app = express()
 app.use(cors())
+
+app.use(fileUpload());
 app.use(express.json())
 
 app.use("/api/v1", companyRouter)
 app.use("/api/v1", riderRouter)
-app.use("/api/v1", userRouter)
+// app.use("/api/v1", userRouter)
 app.use("/api/v1", packageRouter)
 
 

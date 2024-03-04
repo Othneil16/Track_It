@@ -1,11 +1,9 @@
-
-
-const { userAuthenticate } = require("../middleware/userAuth");
 const { createNewPackage } = require("../controllers/packageCont");
+const { companyauthenticate } = require("../middleware/companyAuth");
 
 const packageRouter = require("express").Router()
 
-packageRouter.post("/user/createpackage/:companyId", userAuthenticate, createNewPackage)
+packageRouter.post("/user/createpackage", companyauthenticate, createNewPackage)
 
   
 

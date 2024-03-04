@@ -178,26 +178,18 @@ exports.createPackage = async (req, res) => {
 exports.createNewPackage = async (req, res) => {
     try {
 
-        const { userId } = req.user;
-        const {companyId} = req.params
-
-        // Retrieve company from the database
-        const user = await userModel.findById(userId);
-
+        const {companyId} = req.company
         const company = await companyModel.findById(companyId)
-        if (!user) {
-            return res.status(404).json({
-                message: 'user not found'
-            });
-        }
         if (!company) {
             return res.status(404).json({
                 message: 'company not found'
             });
         }
-    
-
-        // Check if company is verified
+        if (!company.isVerified === true) {
+            return res.status(404).json({
+                message: `can't perform action. Company not verified`
+            });
+        }
 
         const { packageWeight, departure, destination, packageName} = req.body;
 
@@ -231,7 +223,6 @@ exports.createNewPackage = async (req, res) => {
             packageWeight,
             departure,
             destination,
-            user: req.user._id,
             packageId: uniqueId,
             packageName
         });
@@ -239,9 +230,6 @@ exports.createNewPackage = async (req, res) => {
         const savedPackage = await package.save();
         
         company.pendingPackages.push(package._id)
-       user.packages.push(package._id)
-
-        await user.save()
         await company.save()
 
         return res.status(201).json({
