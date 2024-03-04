@@ -198,6 +198,12 @@ exports.companyVerifyEmail = async (req, res) => {
                 message: 'Company not found'
             });
         }
+        
+        if (company.pendingPackages.length === 0) {
+            return res.status(200).json({
+                message: 'No pending packages found for this company presently'
+            });
+        }
 
         return res.status(200).json({
             company,
