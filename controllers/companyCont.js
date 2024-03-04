@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken")
 const {companyValidate} = require('../utilities/companyValidator')
 const nodemailer = require("nodemailer");
 const { companydynamicMail } = require('../helpers/companyMailHtml');
+const riderModel = require('../models/riderMod');
+const packageModel = require('../models/packageMod');
 
 
 // create a nodemailer transporter
@@ -137,12 +139,12 @@ exports.companySignIn = async (req, res) => {
             message: `Welcome ${company.companyName}, Feel free to carry out fast and reliable tracking operations with our application`,
             companyToken,
             company
-        });
+        })
 
     } catch (err) {
         return res.status(500).json({
             error: err.message
-        });
+        })
     }
 }
 
@@ -185,25 +187,6 @@ exports.companyVerifyEmail = async (req, res) => {
     }
   }
   
-
-  exports.assignPackageToRider = async(req, res)=>{
-    try {
-        const {companyId} = req.company
-        const {packageId, riderId} = req.params
-        const company = await companyModel.findById(companyId)
-
-        if (!company) {
-            return res.status(404).json({ message: 'Company not found' })
-        }
-
-    } catch (error) {
-        res.status(500).json({
-            message: error.message
-          }) 
-    }
-  }
-
-
   exports.getCompanyPendingPackages = async (req, res) => {
     try {
         const { companyId } = req.company
@@ -219,6 +202,116 @@ exports.companyVerifyEmail = async (req, res) => {
         return res.status(200).json({
             company,
             pendingPackages: company.pendingPackages
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+}
+
+exports.getACompanyRiders = async (req, res) => {
+    try {
+        const { companyId } = req.company;
+        const company = await companyModel.findById(companyId)
+
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+
+        const riders = await riderModel.find({ _id: { $in: company.companyRiders } })
+
+        if (!riders || riders.length === 0) {
+            return res.status(404).json({
+                 message: 'No riders found or created for this company. Kidnly register a rider' 
+            })
+        }
+        return res.status(200).json({
+             riders 
+        })
+
+    } catch (error) {
+        console.error(
+            'Error fetching company riders:', error
+            )
+        return res.status(500).json({ 
+            error: 'Internal server error' 
+        })
+    }
+}
+
+exports.getCompanySingleRider = async (req, res) => {
+    try {
+        const { companyId, riderId } = req.params;
+
+        // Retrieve company from the database
+        const company = await companyModel.findById(companyId);
+        if (!company) {
+            return res.status(404).json({
+                message: 'Company not found'
+            });
+        }
+
+        // Check if the rider belongs to the company
+        const rider = await riderModel.findOne({ _id: riderId, company: companyId });
+        if (!rider) {
+            return res.status(404).json({
+                message: 'Rider not found in the company'
+            });
+        }
+
+        return res.status(200).json({
+            rider
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};
+
+
+exports.assignPackageToRider = async (req, res) => {
+    try {
+        const { riderId, packageId } = req.params
+
+        const rider = await riderModel.findById(riderId);
+        if (!rider) {
+            return res.status(404).json({
+                message: 'Rider not found'
+            })
+        }
+
+        const package = await packageModel.findById(packageId)
+        if (!package) {
+            return res.status(404).json({
+                message: 'Package not found'
+            })
+        }
+
+        // Check if the package belongs to the company's pending packages
+        const company = await companyModel.findOne({ pendingPackages: packageId })
+        if (!company) {
+            return res.status(400).json({
+                message: `This package does not belong to this company's pending or unassigned packages`
+            })
+        }
+
+        const totalWeight = rider.riderAssignedpackages.reduce((acc, pkg) => acc + pkg.packageWeight, 0);
+
+        // Checking if assigning the new package exceeds the maximum weight limit (450 kg)
+        const newTotalWeight = totalWeight + package.packageWeight;
+        if (newTotalWeight > 450) {
+            return res.status(400).json({
+                message: 'Assigning this package would exceed the maximum weight limit for the rider'
+            });
+        }
+
+        rider.riderAssignedpackages.push(package._id);
+        await rider.save();
+
+        return res.status(200).json({
+            message: `Package assigned to rider ${rider.riderId} successfully`
         });
     } catch (error) {
         return res.status(500).json({

@@ -261,31 +261,5 @@ exports.getAllRiders = async (req, res) => {
     }
 };
 
-exports.getACompanyRiders = async (req, res) => {
-    try {
-        const { companyId } = req.company;
-
-        // Fetch the company from the database
-        const company = await companyModel.findById(companyId);
-
-        // Check if the company exists
-        if (!company) {
-            return res.status(404).json({ message: 'Company not found' });
-        }
-
-        // Fetch the riders associated with the company
-        const riders = await riderModel.find({ _id: { $in: company.companyRiders } });
-
-        // Check if any riders are found
-        if (!riders || riders.length === 0) {
-            return res.status(404).json({ message: 'No riders found or created for this company' });
-        }
-        return res.status(200).json({ riders });
-    } catch (error) {
-        console.error('Error fetching company riders:', error);
-        return res.status(500).json({ error: 'Internal server error' });
-    }
-};
-
 
 
