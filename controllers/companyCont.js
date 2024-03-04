@@ -242,33 +242,32 @@ exports.getACompanyRiders = async (req, res) => {
 
 exports.getCompanySingleRider = async (req, res) => {
     try {
-        const { companyId, riderId } = req.params;
+        const {riderId } = req.params
+        const {companyId} = req.company
 
         // Retrieve company from the database
-        const company = await companyModel.findById(companyId);
+        const company = await companyModel.findById(companyId)
         if (!company) {
             return res.status(404).json({
                 message: 'Company not found'
-            });
+            })
         }
 
-        // Check if the rider belongs to the company
-        const rider = await riderModel.findOne({ _id: riderId, company: companyId });
+        const rider = await riderModel.findOne({ _id: riderId, company: companyId })
         if (!rider) {
             return res.status(404).json({
-                message: 'Rider not found in the company'
-            });
+                message: 'Rider not found in this company'
+            })
         }
-
         return res.status(200).json({
             rider
-        });
+        })
     } catch (error) {
         return res.status(500).json({
             error: error.message
-        });
+        })
     }
-};
+}
 
 
 exports.assignPackageToRider = async (req, res) => {
