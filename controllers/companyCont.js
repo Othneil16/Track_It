@@ -206,8 +206,7 @@ exports.companyVerifyEmail = async (req, res) => {
         }
 
         return res.status(200).json({
-            company,
-            pendingPackages: company.pendingPackages
+        pendingPackages: company.pendingPackages
         });
     } catch (error) {
         return res.status(500).json({
