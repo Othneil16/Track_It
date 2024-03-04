@@ -11,7 +11,7 @@ const packageSchema= new mongoose.Schema({
         unique:true
     },
     packageWeight:{
-        type: String,
+        type: Number,
         require:true
     },
     departure:{

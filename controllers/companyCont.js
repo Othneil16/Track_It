@@ -97,7 +97,7 @@ exports.companySignIn = async (req, res) => {
         
         if (!isEmail && !isPhoneNumber) {
             return res.status(400).json({
-                message: 'Invalid identifier. Please use a valid email or account number.'
+                message: 'Invalid identifier. Please use a valid email or phone Number.'
             });
         }
 
@@ -202,3 +202,27 @@ exports.companyVerifyEmail = async (req, res) => {
           }) 
     }
   }
+
+
+  exports.getCompanyPendingPackages = async (req, res) => {
+    try {
+        const { companyId } = req.company
+
+        const company = await companyModel.findById(companyId).populate('pendingPackages')
+
+        if (!company) {
+            return res.status(404).json({
+                message: 'Company not found'
+            });
+        }
+
+        return res.status(200).json({
+            company,
+            pendingPackages: company.pendingPackages
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};
