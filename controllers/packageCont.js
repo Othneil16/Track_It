@@ -254,3 +254,26 @@ exports.createNewPackage = async (req, res) => {
         });
     }
 };
+
+exports.getOnePackage = async (req, res) => {
+    try {
+        const { packageId } = req.params;
+
+        // Retrieve the package from the database
+        const package = await packageModel.findById(packageId).populate('user');
+
+        if (!package) {
+            return res.status(404).json({
+                message: 'Package not found'
+            });
+        }
+
+        return res.status(200).json({
+            package
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};
