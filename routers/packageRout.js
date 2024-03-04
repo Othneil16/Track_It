@@ -5,7 +5,7 @@ const { createNewPackage } = require("../controllers/packageCont");
 
 const packageRouter = require("express").Router()
 
-packageRouter.post("/user/createpackage/", userAuthenticate, createNewPackage)
+packageRouter.post("/user/createpackage/:companyId", userAuthenticate, createNewPackage)
 
   
 

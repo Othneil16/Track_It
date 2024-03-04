@@ -1,6 +1,6 @@
 const companyModel = require('../models/companyMod');
 const userModel = require('../models/userModel');
-const packageModel = require('./models/packageMod'); 
+const packageModel = require('../models/packageMod'); 
  
 
 
