@@ -239,7 +239,9 @@ exports.createNewPackage = async (req, res) => {
         const savedPackage = await package.save();
         
         company.pendingPackages.push(package._id)
-       
+       user.packages.push(package._id)
+
+        await user.save()
         await company.save()
 
         return res.status(201).json({
