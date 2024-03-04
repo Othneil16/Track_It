@@ -210,6 +210,29 @@ exports.companyVerifyEmail = async (req, res) => {
     }
 }
 
+exports.getCompanyPackages = async (req, res) => {
+    try {
+        const { companyId } = req.company
+
+        const company = await companyModel.findById(companyId).populate('companyPackages')
+
+        if (!company) {
+            return res.status(404).json({
+                message: 'Company not found'
+            });
+        }
+
+        return res.status(200).json({
+            company,
+            allPackages: company.companyPackages
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+}
+
 exports.getACompanyRiders = async (req, res) => {
     try {
         const { companyId } = req.company;
