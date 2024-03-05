@@ -4,8 +4,17 @@ const packageModel = require('../models/packageMod');
  
 
 
-const generateUniqueId = (length)=> {
+const generateFirstUniqueId = (length)=> {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return result;
+}
+
+const generateSecondUniqueId = (length)=> {
+    const characters = '0123456789';
     let result = '';
     for (let i = 0; i < length; i++) {
         result += characters.charAt(Math.floor(Math.random() * characters.length));
@@ -191,7 +200,7 @@ exports.createNewPackage = async (req, res) => {
             });
         }
 
-        const { packageWeight, departure, destination, packageName} = req.body;
+        const { packageWeight, departure, packageName} = req.body;
 
         
     //     const address = destination
@@ -210,7 +219,7 @@ exports.createNewPackage = async (req, res) => {
     let uniqueId;
     let isUniqueId = false;
     while (!isUniqueId) {
-        uniqueId = generateUniqueId(5);
+        uniqueId = generateSecondUniqueId(6);
 
         const existingPackage = await packageModel.findOne({ packageId: uniqueId });
         if (!existingPackage) {
@@ -222,7 +231,6 @@ exports.createNewPackage = async (req, res) => {
         const package = new packageModel({
             packageWeight,
             departure,
-            destination,
             packageId: uniqueId,
             packageName
         });
@@ -243,3 +251,63 @@ exports.createNewPackage = async (req, res) => {
     }
 };
 
+
+exports.packageDestination = async (req, res) => {
+    try {
+        const { newDestination } = req.body
+        const {companyId} = req.company
+        const {packageId} = req.params
+        
+       // Retrieve company from the database
+       const company = await companyModel.findById(companyId);
+       if (!company) {
+           return res.status(404).json({
+               message: 'Company not found'
+           });
+       }
+       
+        if (company.isVerified !== true) {
+            return res.status(400).json({
+                error: "Company not verified"
+            });
+        }   
+        
+        // Check if packageId and newDestination are provided
+        if (!packageId || !newDestination) {
+            return res.status(400).json({
+                error: 'Both packageId and newDestination are required fields.'
+            });
+        }
+
+        // Find the package in the database
+        const package = await packageModel.findById(packageId);
+
+        // Check if the package exists
+        if (!package) {
+            return res.status(404).json({
+                error: 'Package not found.'
+            });
+        }
+        
+        if (!company.unassignedPackages.includes(packageId)) {
+            return res.status(400).json({
+                error: 'The provided package ID is not among the unassigned packages of the company.'
+            });
+        }
+
+        // Update the package destination
+        package.destination = newDestination;
+        
+        // Save the updated package
+        await package.save();
+
+        return res.status(200).json({
+            message: 'Package destination updated successfully.',
+            package: package // Optionally, you can send back the updated package object
+        });
+    } catch (error) {
+        return res.status(500).json({
+            error: error.message
+        });
+    }
+};

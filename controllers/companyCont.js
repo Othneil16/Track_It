@@ -297,7 +297,6 @@ exports.getCompanySingleRider = async (req, res) => {
     }
 }
 
-
 exports.assignPackageToRider = async (req, res) => {
     try {
         const { riderId, packageId } = req.params

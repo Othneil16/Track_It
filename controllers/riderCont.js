@@ -43,7 +43,7 @@ const generateUniqueId = (length)=> {
         }
 
         // Check if company is verified
-        if (!company.isVerified) {
+        if (company.isVerified !== true) {
             return res.status(400).json({
                 error: "Company not verified"
             });
