@@ -359,3 +359,30 @@ exports.assignPackageToRider = async (req, res) => {
     }
 }
 
+exports.getCompany = async (req, res) => {
+    try {
+        const { companyId } = req.company;
+        
+        // Retrieve company from the database
+        const company = await companyModel.findById(companyId);
+        
+        // Check if the company exists
+        if (!company) {
+            return res.status(404).json({ message: 'Company not found' });
+        }
+         
+        if (company.isVerified !== true) {
+            return res.status(400).json({
+                message:`can't perform action: Company not verified`
+            })
+          }
+
+        // If the company exists, return it in the response
+        return res.status(200).json({ company });
+    } catch (error) {
+        // Handle any errors that occur during the process
+        console.error('Error getting company:', error.message);
+        return res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
