@@ -54,6 +54,33 @@ const generateSecondUniqueId = (length)=> {
 // }
 
 
+const axios = require('axios');
+
+exports.convertAddressToCoordinates = async (address) => {
+    try {
+        if (!address) {
+            throw new Error('Address is required.');
+        }
+
+        const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        
+        const response = await axios.get(apiUrl);
+
+        if (!response.data || response.data.length === 0) {
+            throw new Error('Unable to find coordinates for the provided address.');
+        }
+
+        const { lat, lon } = response.data[0];
+
+        return {
+            latitude: parseFloat(lat),
+            longitude: parseFloat(lon)
+        };
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
 
 
 exports.createPackage = async (req, res) => {
@@ -84,7 +111,7 @@ exports.createPackage = async (req, res) => {
 
         
         const address = destination
-        isValidAddress(address)
+        convertAddressToCoordinates(address)
     .then(valid => {
         if (valid) {
             console.log('Address is valid');
@@ -120,7 +147,7 @@ exports.createPackage = async (req, res) => {
         const savedPackage = await package.save();
         
         company.pendingPackages.push(package._id)
-        company.companyPackages.push(package._id)
+        // company.companyPackages.push(package._id)
 
         await company.save()
 
@@ -288,7 +315,7 @@ exports.packageDestination = async (req, res) => {
                 error: 'Package not found.'
             });
         }
-        
+
         if (!company.unassignedPackages.includes(packageId)) {
             return res.status(400).json({
                 error: 'The provided package ID is not among the unassigned packages of the company.'

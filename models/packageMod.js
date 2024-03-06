@@ -21,12 +21,11 @@ const packageSchema= new mongoose.Schema({
     },
     destination:{
         type: String,
-        require:true
     },
-    user:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User", 
-    },
+    // user:{
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: "User", 
+    // },
     packageId:{
         type: String,
         require:true,
