@@ -51,8 +51,7 @@ const generateUniqueId = (length)=> {
        
     
         const { riderFirstName, riderLastName, riderEmail, riderPhoneNumber, riderPassword, riderAddress, confirmRiderPassword} = req.body;
-        console.log(req.file)
-        console.log(req.file.profileImage)
+       
 
 
       
@@ -61,10 +60,10 @@ const generateUniqueId = (length)=> {
         // }
 
         //const file = req.file
-        const result = await cloudinary.uploader.upload(req.file.tempFilePath, {
-            folder: 'rider-profiles',
-            resource_type: 'auto'
-        });
+        // const result = await cloudinary.uploader.upload(req.file.tempFilePath, {
+        //     folder: 'rider-profiles',
+        //     resource_type: 'auto'
+        // });
         
         await riderValidate.validateAsync(req.body);
 
@@ -100,7 +99,6 @@ const generateUniqueId = (length)=> {
             riderAddress,
             riderEmail: riderEmail.toLowerCase(),
             riderPassword: hashedRiderPassword,
-            profileImage:result.secure_url,
             riderId: uniqueId
         });
 
@@ -237,11 +235,8 @@ exports.verifyRiderEmail = async (req, res) => {
       // update the user's verification status
       const updatedRider = await riderModel.findOneAndUpdate({ riderEmail }, rider);
   
-      res.status(200).json({
-        message: "rider verified successfully",
-        data: updatedRider,
-      })
-      // res.status( 200 ).redirect( `${ process.env.BASE_URL }/login` );
+     
+      res.redirect( `https://the-track-it.vercel.app/companylogin` );
   
     } catch (error) {
       res.status(500).json({
