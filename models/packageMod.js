@@ -34,6 +34,9 @@ const packageSchema= new mongoose.Schema({
     delivered:{
         type:Boolean,
         default:false
+    },
+    location:{
+        type:String
     }
     
 },{timestamp:true})

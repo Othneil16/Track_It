@@ -266,3 +266,10 @@ exports.getAllRiders = async (req, res) => {
 
 
 
+// exports.updateRiderImage = async(req, res)=>{
+// try {
+//     const (riderId) = req.rider
+// } catch (error) {
+    
+// }
+// }
