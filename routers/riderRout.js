@@ -6,9 +6,9 @@ const multer = require('../imagesutils/multer');
 
 const riderRouter = require("express").Router()
 
-riderRouter.post('/company/rider/create', multer.single('profileImage'),companyauthenticate, createRider)
+// riderRouter.post('/company/rider/create', multer.single('profileImage'),companyauthenticate, createRider)
 
-// riderRouter.post('/company/rider/SignUp', companyauthenticate, createRider)
+riderRouter.post('/company/rider/SignUp', companyauthenticate, createRider)
 
 riderRouter.post("/company/rider/SignIn", riderSignIn)
 
