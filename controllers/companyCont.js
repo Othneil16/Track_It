@@ -178,7 +178,7 @@ exports.companyVerifyEmail = async (req, res) => {
     // if(company.isVerified === true){
     //  return res.status(200).send(generateLoginCss, `<script>setTimeout(()=>{window.location.href = 'https://the-track.it.vercel.app/login' ;}, 2000); </script>`);
     // }
-        res.redirect( `https://the-track-it.vercel.app/login` );
+        res.redirect( `https://the-track-it.vercel.app/companylogin` );
      
     } catch (error) {
       res.status(500).json({
