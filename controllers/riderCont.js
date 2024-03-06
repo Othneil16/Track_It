@@ -51,15 +51,17 @@ const generateUniqueId = (length)=> {
        
     
         const { riderFirstName, riderLastName, riderEmail, riderPhoneNumber, riderPassword, riderAddress, confirmRiderPassword} = req.body;
-        
+        console.log(req.file)
+        console.log(req.file.profileImage)
+
 
       
-        if (!req.file || !req.file.profileImage) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
+        // if (!req.file || req.file.profileImage) {
+        //     return res.status(400).json({ error: 'No file uploaded' });
+        // }
 
-        const file = req.file;
-        const result = await cloudinary.uploader.upload(file.tempFilePath, {
+        //const file = req.file
+        const result = await cloudinary.uploader.upload(req.file.tempFilePath, {
             folder: 'rider-profiles',
             resource_type: 'auto'
         });
@@ -98,7 +100,7 @@ const generateUniqueId = (length)=> {
             riderAddress,
             riderEmail: riderEmail.toLowerCase(),
             riderPassword: hashedRiderPassword,
-            // profileImage:result.secure_url,
+            profileImage:result.secure_url,
             riderId: uniqueId
         });
 
