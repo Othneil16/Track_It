@@ -161,7 +161,7 @@ exports.companyVerifyEmail = async (req, res) => {
   
       // Check if user has already been verified
       if (company.isVerified) {
-        setTimeout(res.redirect(`https://the-track-it.vercel.app/companylogin`), 5000)
+        res.redirect(`https://the-track-it.vercel.app/companylogin`)
       }
   
       // update the user verification
