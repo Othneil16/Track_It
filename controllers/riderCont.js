@@ -54,15 +54,15 @@ const generateUniqueId = (length)=> {
         
 
       
-        // if (!req.file || !req.file.profileImage) {
-        //     return res.status(400).json({ error: 'No file uploaded' });
-        // }
+        if (!req.file || !req.file.profileImage) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
 
-        // const file = req.file;
-        // const result = await cloudinary.uploader.upload(file.tempFilePath, {
-        //     folder: 'rider-profiles',
-        //     resource_type: 'auto'
-        // });
+        const file = req.file;
+        const result = await cloudinary.uploader.upload(file.tempFilePath, {
+            folder: 'rider-profiles',
+            resource_type: 'auto'
+        });
         
         await riderValidate.validateAsync(req.body);
 

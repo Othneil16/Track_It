@@ -56,31 +56,47 @@ const generateSecondUniqueId = (length)=> {
 
 const axios = require('axios');
 
-exports.convertAddressToCoordinates = async (address) => {
+exports.convertAddressToCoordinates = (address) => {
+    
     try {
         if (!address) {
-            throw new Error('Address is required.');
+            return res.status(400).json({
+                message: 'Address is required in the request body.'
+            })
         }
+        const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`
 
-        const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
-        
-        const response = await axios.get(apiUrl);
-
+        const response = axios.get(apiUrl)
+        .then((data)=>{
+          return data
+      })
+      .catch((error)=> console.log(error.message
+        ))
+      
+        // Check if the response contains data
         if (!response.data || response.data.length === 0) {
-            throw new Error('Unable to find coordinates for the provided address.');
+            return res.status(400).json({
+                message: 'Unable to find coordinates for the provided address.'
+            });
         }
 
+        // Extract latitude and longitude from the first result
         const { lat, lon } = response.data[0];
 
-        return {
-            latitude: parseFloat(lat),
-            longitude: parseFloat(lon)
-        };
+        // Respond with the coordinates
+        return res.status(200).json({
+            message: 'Address converted to coordinates successfully.',
+            coordinates: {
+                latitude: parseFloat(lat),
+                longitude: parseFloat(lon)
+            }
+        });
     } catch (error) {
-        throw new Error(error.message);
+        // Handle errors and respond with an error message
+        console.error('Geocoding error:', error.message);
+        return res.status(500).json({ message: 'Internal server error.' });
     }
 };
-
 
 
 exports.createPackage = async (req, res) => {
@@ -111,7 +127,7 @@ exports.createPackage = async (req, res) => {
 
         
         const address = destination
-        convertAddressToCoordinates(address)
+        isValidAddress(address)
     .then(valid => {
         if (valid) {
             console.log('Address is valid');
@@ -147,7 +163,7 @@ exports.createPackage = async (req, res) => {
         const savedPackage = await package.save();
         
         company.pendingPackages.push(package._id)
-        // company.companyPackages.push(package._id)
+        company.companyPackages.push(package._id)
 
         await company.save()
 

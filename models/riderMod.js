@@ -8,10 +8,10 @@ const riderSchema = new mongoose.Schema({
         type: String,
         require:true
     }, 
-    // riderprofileImage:{
-    //      type: String,
-    //      require:true
-    //  }, 
+    riderprofileImage:{
+         type: String,
+         require:true
+     }, 
     riderphoneNumber:{
         type: String,
         require:true,

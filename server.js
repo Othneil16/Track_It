@@ -1,5 +1,5 @@
 const express = require('express')
-const fileUpload = require('express-fileupload');
+// const fileUpload = require('express-fileupload');
 
 const config =  require('./config/config')
 const cors = require('cors')
@@ -13,7 +13,7 @@ const port = process.env.port || 2035
 const app = express()
 app.use(cors())
 
-app.use(fileUpload());
+// app.use(fileUpload());
 app.use(express.json())
 
 app.use("/api/v1", companyRouter)
