@@ -63,7 +63,7 @@ const revokedRiderTokenModel = require('../models/revokedRiderTokenMod')
 // }
 
 
-exports.companyauthenticate = async (req, res, next) => {
+exports.riderauthenticate = async (req, res, next) => {
     try {
         const hasAuthorization = req.headers.authorization;
 

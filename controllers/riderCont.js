@@ -188,7 +188,7 @@ exports.riderSignIn = async (req, res) => {
         const riderToken = jwt.sign({
             riderId: rider._id,
             riderEmail: rider.riderEmail,
-            riderPhoneNumber: rider.riderPhoneNumber,
+            riderPhoneNumber: rider.riderphoneNumber,
             riderAssignedPackages: rider.riderAssignedpackages // Assuming you have this field defined
         }, process.env.jsonSecret, { expiresIn: '1d' });
 
@@ -221,9 +221,7 @@ exports.verifyRiderEmail = async (req, res) => {
   
       // Check if user has already been verified
       if (rider.isVerified) {
-        return res.status(400).json({
-          error: "rider already verified"
-        });
+        res.redirect(`https://the-track-it.vercel.app/riderlogin`)
       }
   
       // update the user verification
@@ -235,8 +233,7 @@ exports.verifyRiderEmail = async (req, res) => {
       // update the user's verification status
       const updatedRider = await riderModel.findOneAndUpdate({ riderEmail }, rider);
   
-     
-      res.redirect( `https://the-track-it.vercel.app/companylogin` );
+      res.redirect(`https://the-track-it.vercel.app/riderlogin`)
   
     } catch (error) {
       res.status(500).json({
@@ -264,7 +261,16 @@ exports.getAllRiders = async (req, res) => {
     }
 };
 
+
+const NodeGeocoder = require('node-geocoder');
 const http = require("http")
+const ipLocation = require("iplocation")
+
+
+const geoCoderOption ={
+    provider:"openstreetmap"
+  }
+  const geocoder = NodeGeocoder(geoCoderOption);
 
 function getSystemIpAddress() {
     return new Promise((resolve, reject) => {
@@ -289,66 +295,30 @@ function getSystemIpAddress() {
         });
     });
 }
-exports.riderLocation = async(req, res)=>{
-try {
-    
-} catch (error) {
-    
-}
-}
-
 
 exports.getRiderLocation = async (req, res) => {
-    const {riderId} = req.rider;
+   
   try {
+    const {riderId} = req.rider
+    const rider = await riderModel.findById(riderId)
+
+    if (!rider) {
+        return res.status(400).json({
+          error: "rider not found"
+        });
+      }
+      if (rider.isVerified !== true) {
+        return res.status(400).json({
+          error: "oops!! can't perform action, rider not verified"
+        });
+      }
 
     const ipAddress = await getSystemIpAddress();
-      // const os = require('os');
-       console.log(ipAddress);
-      // const location = await geocoder.geocode(req.clientIp);
+      
+    //    console.log(ipAddress);
       const location = await ipLocation(ipAddress);
-        console.log("Geocoding result:", location);
+        // console.log("Geocoding result:", location);
 
-        // You can send the geocoding result or perform any other actions here
-// function getIPAddress() {
-//     const networkInterfaces = os.networkInterfaces();
-//     let ipAddress = null;
-
- 
-//     Object.keys(networkInterfaces).forEach(interfaceName => {
-//         networkInterfaces[interfaceName].forEach(interfaceInfo => {
-          
-//             if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
-//                 ipAddress = interfaceInfo.address;
-//             }
-//         }); 
-//     });
-
-//     return ipAddress;
-// }
-
-
-//     // Validate the data if needed
-//     const newlat = Number(latitude)
-//     const newlon = Number(longitude)
-//       if(!newlat || !newlon){
-//         return res.status(400).json({
-//             message:`Number data type require`
-//         })
-//       }
-
-//     // Create a new LocationModel instance
-//     const newlocation = new LocationModel({ latitude:newlat, 
-//     longitude:newlon
-// });
-    
-//     if(!location){
-//       return res.status(400).json({
-//         message:"couldn't create"
-//       })
-// //     }
-    // const ip =getIPAddress()
-    // console.log("i am the ip"+ip)
     const geocodeResult = await geocoder.reverse({lat:location.latitude, lon:location.longitude},(error, result)=>{
       if(error){
        res.status(400).json({
@@ -359,18 +329,23 @@ exports.getRiderLocation = async (req, res) => {
       }
     })
 
- console.log('Geocoding result:', geocodeResult);
+    const riderAddress =  geocodeResult[0].formattedAddress
+    rider.riderLocation = riderAddress
+    console.log(riderAddress);
 
-    // Save the obtained address along with the location to the database
-    // location.address = geocodeResult[0].formattedAddress;
-    // console.log(location.address);
+    for (const package of rider.riderPackages) {
+        package.location = riderAddress;
+        await package.save();
+    }
+ 
      
     // Save the location to the database
-    //await location.save();
+    await rider.save();
 
     // Respond with a success message
     res.status(200).json({
-         message: 'Location saved successfully'+ geocodeResult[0].formattedAddress,
+         message: 'rider location updated successfully',
+        riderAddress,
 
          });
   } catch (err) {
