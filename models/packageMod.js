@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const packageSchema= new mongoose.Schema({
     status: {
         type: String,
-        enum: ['pending', 'assigned', 'in transit', 'delivered'],
+        enum: ['pending', 'assigned','delivered'],
         default: 'pending'
     },
     packageName:{
@@ -17,7 +17,6 @@ const packageSchema= new mongoose.Schema({
     departure:{
         type: String,
         require:true,
-        unique:true
     },
     destination:{
         type: String,
