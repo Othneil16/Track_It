@@ -303,11 +303,11 @@ exports.getCompanySingleRider = async (req, res) => {
 
 exports.assignToRider = async (req, res) => {
     try {
-    const {riderMid, packageMid} = req.params._id
+    const {riderMid, packageMid} = req.params
  
     const {companyId} = req.company
         
-        const rider = await riderModel.findOne({_id:riderMid})
+        const rider = await riderModel.findOne({id:riderMid})
         if (!rider) {
             return res.status(404).json({
                 message: 'Rider not found'
@@ -322,7 +322,7 @@ exports.assignToRider = async (req, res) => {
             })
         }
 
-        const package = await packageModel.findById(packageMid.toString());
+        const package = await packageModel.findOne({id:packageMid})
         if (!package) {
             return res.status(404).json({
                 message: 'Package not found'
