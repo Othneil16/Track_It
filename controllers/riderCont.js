@@ -108,7 +108,6 @@ const generateUniqueId = (length)=> {
             riderEmail: rider.riderEmail,
             riderPhoneNumber,
             riderFirstName,
-            riderLocation: rider.riderLocation,
         }, process.env.jsonSecret, { expiresIn: "50m" });
 
         // Sending a verification email to the rider
@@ -232,15 +231,19 @@ exports.verifyRiderEmail = async (req, res) => {
   
       // update the user's verification status
       const updatedRider = await riderModel.findOneAndUpdate({ riderEmail }, rider);
-  
-      res.redirect(`https://the-track-it.vercel.app/riderlogin`)
-  
+     
+    // if(company.isVerified === true){
+    //  return res.status(200).send(generateLoginCss, `<script>setTimeout(()=>{window.location.href = 'https://the-track.it.vercel.app/login' ;}, 2000); </script>`);
+    // }
+        res.redirect( `https://the-track-it.vercel.app/riderlogin` );
+     
     } catch (error) {
       res.status(500).json({
         message: error.message
       })
     }
   }
+  
   
 
 exports.getAllRiders = async (req, res) => {
@@ -297,7 +300,6 @@ function getSystemIpAddress() {
 }
 
 exports.getRiderLocation = async (req, res) => {
-   
   try {
     const {riderId} = req.rider
     const rider = await riderModel.findById(riderId)
