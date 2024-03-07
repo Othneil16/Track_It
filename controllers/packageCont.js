@@ -329,13 +329,16 @@ exports.packageDestination = async (req, res) => {
 
         // Convert address to coordinates
         const coordinates = await convertAddressToCoordinates(newDestination)
+  
 
-    // Create a string representation of coordinates
-       const destinationString = `${coordinates.latitude},${coordinates.longitude}`;
-
-       // Update the package destination with the string representation of coordinates
-       package.destination = destinationString;
-
+         if(!coordinates){
+          res.status(400).json({
+            message:`Can't get coordinates`
+          })
+         }
+        
+        package.destination = newDestination
+         
 
         // Save the updated package
         await package.save();
