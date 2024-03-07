@@ -376,12 +376,6 @@ exports.getCompany = async (req, res) => {
         if (!company) {
             return res.status(404).json({ message: 'Company not found' });
         }
-         
-        if (company.isVerified !== true) {
-            return res.status(400).json({
-                message:`can't perform action: Company not verified`
-            })
-          }
 
         // If the company exists, return it in the response
         return res.status(200).json({ company });
