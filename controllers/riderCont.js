@@ -356,3 +356,44 @@ exports.getRiderLocation = async (req, res) => {
     console.error('Geocoding error:', err.message);
   }
 };
+
+exports.updatePackageLocationOnDelivery = async (req, res) => {
+    try {
+        const { riderId } = req.rider;
+        const { packageMid } = req.params;
+
+        const rider = await riderModel.findById(riderId);
+
+        if (!rider) {
+            return res.status(400).json({
+                error: "Rider not found"
+            });
+        }
+
+        if (!rider.isVerified) {
+            return res.status(400).json({
+                error: "Oops!! Can't perform action, rider not verified"
+            });
+        }
+
+        const package = await packageModel.findOne({ _id: packageMid });
+
+        if (!package) {
+            return res.status(404).json({
+                message: 'Package not found'
+            });
+        }
+
+        rider.riderAssignedpackages.pull(packageMid);
+        package.status = 'delivered';
+        package.location = package.destination;
+        await package.save();
+
+        res.status(200).json({
+            message: 'Package delivered successfully',
+            package
+        });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};

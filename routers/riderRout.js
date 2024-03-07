@@ -1,5 +1,5 @@
 
-const { verifyRiderEmail, riderSignIn, createRider, getRiderLocation,} = require("../controllers/riderCont")
+const { verifyRiderEmail, riderSignIn, createRider, getRiderLocation, updatePackageLocationOnDelivery,} = require("../controllers/riderCont")
 const { companyauthenticate } = require("../middleware/companyAuth")
 const multer = require('../imagesutils/multer');
 const { riderauthenticate } = require("../middleware/riderAuth");
@@ -17,5 +17,7 @@ riderRouter.get( "/company/rider/verify-email/:riderToken",verifyRiderEmail)
   
 riderRouter.get('/rider/getlocation',riderauthenticate, getRiderLocation);
 
+
+riderRouter.put("/rider/package/delivered/:packageMid", riderauthenticate, updatePackageLocationOnDelivery)
 
 module.exports = riderRouter
