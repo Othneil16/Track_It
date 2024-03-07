@@ -14,6 +14,6 @@ companyRouter.get("/company/allpendingpackages",companyauthenticate, getCompanyP
 
 companyRouter.get("/company/allpackages",companyauthenticate, getCompanyPackages)
 
-companyRouter.get("/company"), companyauthenticate, getCompany
+companyRouter.get("/company", companyauthenticate, getCompany), 
 
 module.exports = companyRouter
