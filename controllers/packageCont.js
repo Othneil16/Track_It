@@ -308,19 +308,6 @@ exports.packageDestination = async (req, res) => {
                message: 'Company not found'
            });
        }
-       
-        if (company.isVerified !== true) {
-            return res.status(400).json({
-                error: "Company not verified"
-            });
-        }   
-        
-        // Check if packageId and newDestination are provided
-        if (!packageId || !newDestination) {
-            return res.status(400).json({
-                error: 'Both packageId and newDestination are required fields.'
-            });
-        }
 
         // Find the package in the database
         const package = await packageModel.findById(packageId);
@@ -348,7 +335,7 @@ exports.packageDestination = async (req, res) => {
 
         return res.status(200).json({
             message: 'Package destination updated successfully.',
-            package: package // Optionally, you can send back the updated package object
+            package: package 
         });
     } catch (error) {
         return res.status(500).json({
