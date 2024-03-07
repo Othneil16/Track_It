@@ -1,4 +1,4 @@
-const { createCompany, companySignIn, companyVerifyEmail, getACompanyRiders, getCompanyPendingPackages, getCompanyPackages, getCompany } = require("../controllers/companyCont")
+const { createCompany, companySignIn, companyVerifyEmail, getACompanyRiders, getCompanyPendingPackages, getCompanyPackages, getCompany, assignPackageToRider, assignToRider} = require("../controllers/companyCont")
 const { companyauthenticate } = require("../middleware/companyAuth")
 
 const companyRouter = require("express").Router()
@@ -17,6 +17,9 @@ companyRouter.get("/company/allpackages",companyauthenticate, getCompanyPackages
 companyRouter.get("/company", companyauthenticate, getCompany), 
 
 
-companyRouter.put("/company/assigntorider/:", companyauthenticate, getCompany), 
+// companyRouter.put("/company/assigntorider/:riderId/:packageId", companyauthenticate, assignToRider), 
+
+
+companyRouter.put("/company/assigntorider/:riderMid/:packageMid", companyauthenticate, assignToRider), 
 
 module.exports = companyRouter

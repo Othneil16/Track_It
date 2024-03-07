@@ -22,9 +22,9 @@ app.use("/api/v1", riderRouter)
 app.use("/api/v1", packageRouter)
 
 
-app.use('/', (req, res)=>{
-    res.send('This is a tracking application software; where companies, riders and users can take real time track of their present location or package location')
-})
+// app.use('/', (req, res)=>{
+//     res.send('This is a tracking application software; where companies, riders and users can take real time track of their present location or package location')
+// })
 
 app.use('/uploads', express.static('uploads'))
 
