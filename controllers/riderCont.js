@@ -95,7 +95,7 @@ const generateUniqueId = (length)=> {
         const rider = new riderModel({
             riderFirstName: riderFirstName.toUpperCase(),
             riderLastName: riderLastName.toUpperCase(),
-            riderPhoneNumber,
+            riderphoneNumber:riderPhoneNumber,
             riderAddress,
             riderEmail: riderEmail.toLowerCase(),
             riderPassword: hashedRiderPassword,
@@ -264,12 +264,118 @@ exports.getAllRiders = async (req, res) => {
     }
 };
 
+const http = require("http")
 
+function getSystemIpAddress() {
+    return new Promise((resolve, reject) => {
+        // Make an HTTP request to a service that echoes back the client's IP address
+        const request = http.get('http://ipinfo.io/ip', (response) => {
+            let ipAddress = '';
 
-// exports.updateRiderImage = async(req, res)=>{
-// try {
-//     const (riderId) = req.rider
-// } catch (error) {
+            // Concatenate chunks of data to get the complete response
+            response.on('data', (chunk) => {
+                ipAddress += chunk;
+            });
+
+            // Once the response is complete, resolve the promise with the IP address
+            response.on('end', () => {
+                resolve(ipAddress.trim());
+            });
+        });
+
+        // Handle errors
+        request.on('error', (error) => {
+            reject(error);
+        });
+    });
+}
+exports.riderLocation = async(req, res)=>{
+try {
     
+} catch (error) {
+    
+}
+}
+
+
+exports.getRiderLocation = async (req, res) => {
+    const {riderId} = req.rider;
+  try {
+
+    const ipAddress = await getSystemIpAddress();
+      // const os = require('os');
+       console.log(ipAddress);
+      // const location = await geocoder.geocode(req.clientIp);
+      const location = await ipLocation(ipAddress);
+        console.log("Geocoding result:", location);
+
+        // You can send the geocoding result or perform any other actions here
+// function getIPAddress() {
+//     const networkInterfaces = os.networkInterfaces();
+//     let ipAddress = null;
+
+ 
+//     Object.keys(networkInterfaces).forEach(interfaceName => {
+//         networkInterfaces[interfaceName].forEach(interfaceInfo => {
+          
+//             if (interfaceInfo.family === 'IPv4' && !interfaceInfo.internal) {
+//                 ipAddress = interfaceInfo.address;
+//             }
+//         }); 
+//     });
+
+//     return ipAddress;
 // }
-// }
+
+
+//     // Validate the data if needed
+//     const newlat = Number(latitude)
+//     const newlon = Number(longitude)
+//       if(!newlat || !newlon){
+//         return res.status(400).json({
+//             message:`Number data type require`
+//         })
+//       }
+
+//     // Create a new LocationModel instance
+//     const newlocation = new LocationModel({ latitude:newlat, 
+//     longitude:newlon
+// });
+    
+//     if(!location){
+//       return res.status(400).json({
+//         message:"couldn't create"
+//       })
+// //     }
+    // const ip =getIPAddress()
+    // console.log("i am the ip"+ip)
+    const geocodeResult = await geocoder.reverse({lat:location.latitude, lon:location.longitude},(error, result)=>{
+      if(error){
+       res.status(400).json({
+         message:`Can't reverse the data`
+       })
+      }else{
+       return result
+      }
+    })
+
+ console.log('Geocoding result:', geocodeResult);
+
+    // Save the obtained address along with the location to the database
+    // location.address = geocodeResult[0].formattedAddress;
+    // console.log(location.address);
+     
+    // Save the location to the database
+    //await location.save();
+
+    // Respond with a success message
+    res.status(200).json({
+         message: 'Location saved successfully'+ geocodeResult[0].formattedAddress,
+
+         });
+  } catch (err) {
+    // Handle errors and respond with an error message
+    res.status(500).json({ message: err.message });
+    console.error('Geocoding error:', err.message);
+  }
+};
