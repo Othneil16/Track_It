@@ -237,9 +237,9 @@ exports.createNewPackage = async (req, res) => {
                 message: 'company not found'
             });
         }
-        if (!company.isVerified === true) {
+        if (company.isVerified !== true) {
             return res.status(404).json({
-                message: `can't perform action. Company not verified`
+                message: `ooops!!, can't perform action. Company not verified`
             });
         }
 
@@ -262,7 +262,7 @@ exports.createNewPackage = async (req, res) => {
     let uniqueId;
     let isUniqueId = false;
     while (!isUniqueId) {
-        uniqueId = generateSecondUniqueId(6);
+        uniqueId = generateSecondUniqueId(5);
 
         const existingPackage = await packageModel.findOne({ packageId: uniqueId });
         if (!existingPackage) {

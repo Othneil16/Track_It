@@ -115,6 +115,12 @@ exports.companySignIn = async (req, res) => {
                 message: 'company not found'
             });
         }
+
+        if (company.isVerified !== true) {
+            return res.status(404).json({
+                message: `ooops!!, can't perform action. Company not yet verified`
+            });
+        }
            // comparing the user's password to that coming from the req.body 
         const comparePassword = bcrypt.compareSync(companyPassword, company.companyPassword);
 
