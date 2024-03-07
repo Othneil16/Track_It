@@ -33,10 +33,10 @@ const companySchema = new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref:"packages",
     }],
-    companyUsers:[{
-        type: mongoose.SchemaTypes.ObjectId,
-        ref:"User",
-    }],
+    // companyUsers:[{
+    //     type: mongoose.SchemaTypes.ObjectId,
+    //     ref:"User",
+    // }],
     pendingPackages:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref:"packages",
