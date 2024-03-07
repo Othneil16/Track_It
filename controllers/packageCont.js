@@ -295,19 +295,21 @@ exports.createNewPackage = async (req, res) => {
 };
 
 
+
+
 exports.packageDestination = async (req, res) => {
     try {
-        const { newDestination } = req.body
-        const {companyId} = req.company
-        const {packageId} = req.params
-        
-       // Retrieve company from the database
-       const company = await companyModel.findById(companyId);
-       if (!company) {
-           return res.status(404).json({
-               message: 'Company not found'
-           });
-       }
+        const { newDestination } = req.body;
+        const { companyId } = req.company;
+        const { packageId } = req.params;
+
+        // Retrieve company from the database
+        const company = await companyModel.findById(companyId);
+        if (!company) {
+            return res.status(404).json({
+                message: 'Company not found'
+            });
+        }
 
         // Find the package in the database
         const package = await packageModel.findById(packageId);
@@ -319,23 +321,28 @@ exports.packageDestination = async (req, res) => {
             });
         }
 
-        if (!company.unassignedPackages.includes(packageId)) {
+        if (!company.pendingPackages.includes(packageId)) {
             return res.status(400).json({
                 error: 'The provided package ID is not among the unassigned packages of the company.'
             });
         }
 
-        await convertAddressToCoordinates(newDestination)
+        // Convert address to coordinates
+        const coordinates = await convertAddressToCoordinates(newDestination)
 
-        // Update the package destination
-        package.destination = newDestination;
-        
+    // Create a string representation of coordinates
+       const destinationString = `${coordinates.latitude},${coordinates.longitude}`;
+
+       // Update the package destination with the string representation of coordinates
+       package.destination = destinationString;
+
+
         // Save the updated package
         await package.save();
 
         return res.status(200).json({
             message: 'Package destination updated successfully.',
-            package: package 
+            package: package
         });
     } catch (error) {
         return res.status(500).json({
@@ -343,3 +350,24 @@ exports.packageDestination = async (req, res) => {
         });
     }
 };
+
+async function convertAddressToCoordinates(address) {
+    try {
+        if (!address) {
+            throw new Error('Address is required.');
+        }
+        const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+        const response = await axios.get(apiUrl);
+        if (!response.data || response.data.length === 0) {
+            throw new Error('Unable to find coordinates for the provided address.');
+        }
+        const { lat, lon } = response.data[0];
+        return {
+            latitude: parseFloat(lat),
+            longitude: parseFloat(lon)
+        };
+    } catch (error) {
+        throw new Error('Error converting address to coordinates: ' + error.message);
+    }
+}
+
