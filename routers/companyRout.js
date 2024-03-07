@@ -16,4 +16,7 @@ companyRouter.get("/company/allpackages",companyauthenticate, getCompanyPackages
 
 companyRouter.get("/company", companyauthenticate, getCompany), 
 
+
+companyRouter.put("/company/assigntorider/:", companyauthenticate, getCompany), 
+
 module.exports = companyRouter
